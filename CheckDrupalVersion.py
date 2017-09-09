@@ -16,12 +16,16 @@ def get_drupal_version_from_url(url_to_check = ""):
 
     url_to_check = url_to_check.__add__("/CHANGELOG.txt")
 
-    url_request = Request(url_to_check)
-    url_request.add_header("Range", "bytes=0-100")
+    try:
+        url_request = Request(url_to_check)
+        url_request.add_header("Range", "bytes=0-100")
 
-    drupal_version_string = urlopen(url_request).read()
+        drupal_version_string = urlopen(url_request).read()
 
-    drupal_version_string = sanitize_drupal_version_output(drupal_version_string)
+        drupal_version_string = sanitize_drupal_version_output(drupal_version_string)
+
+    except Exception:
+        drupal_version_string = "ERORR While Connecting: Likely Not A Drupal Site. "
 
     return drupal_version_string
 
@@ -88,11 +92,21 @@ while True:
 Please provide the file path to your URL list. 
 NOTE: URLs whould be formatted one per line.
 ''')
-        print("For reference, your current directory is: "+ str(os.getcwd()))
+        print("For reference, your current (and default) directory is: "+ str(os.getcwd()))
         user_input_directory = input(":")
+
+        """Sanitization"""
+        if not user_input_directory.endswith(".txt"):
+            user_input_directory = user_input_directory + ".txt"
+
+        """If we don't think the user has supplied a path, supply it for them"""
+        if "/" not in user_input_directory:
+            user_input_directory = str(os.getcwd()) + '\\' + user_input_directory
+
         if(os.path.isfile(user_input_directory)):
             break
         else:
+            print("I thought you were oging to: " + user_input_directory)
             print('''
 ERROR: Invalid File Path. Please try again.
             ''')
@@ -118,7 +132,7 @@ NOTE: This file will be created in the current working directory unless otherwis
 
     user_output_directory = input(":")
     """Sanitization Always"""
-    if not user_input_directory.endswith(".txt"):
+    if not user_output_directory.endswith(".txt"):
         user_output_directory = user_output_directory + ".txt"
 
     output_file = open(user_output_directory, "w")
@@ -126,3 +140,4 @@ NOTE: This file will be created in the current working directory unless otherwis
         output_file.write("%s\n" % item)
 
     output_file.close()
+    break
