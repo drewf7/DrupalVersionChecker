@@ -229,8 +229,10 @@ NOTE: This file will be created in the current working directory unless otherwis
     else:
         try:
             os.stat('tmp')
+            os.stat('tmp/d8')
         except:
             os.mkdir('tmp')
+            os.mkdir('tmp/d8')
         try:
             return_text = get_drupal_version_from_url(str(sys.argv[1]))
             if return_text == "ERORR While Connecting: Likely Not A Drupal Site.":
